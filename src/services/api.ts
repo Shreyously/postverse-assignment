@@ -119,21 +119,65 @@ export const postsApi = {
   getPostById: (id: string) => 
     apiCall<Post>(`/posts/${id}`, { method: 'GET' }),
   
-  createPost: (postData: FormData) => 
-    apiCall<Post>('/posts', { 
-      method: 'POST', 
+  createPost: (postData: FormData) => {
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       body: postData,
-      headers: {}, // Let fetch set proper content-type for FormData
-      requiresAuth: true 
-    }),
+      credentials: 'include'
+    };
+    
+    return fetch(`${API_BASE_URL}/posts`, options)
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => {
+            throw new Error(err.message || 'Failed to create post');
+          });
+        }
+        return response.json();
+      })
+      .catch(error => {
+        const message = error instanceof Error ? error.message : 'Failed to create post';
+        toast({
+          title: "Error",
+          description: message,
+          variant: "destructive",
+        });
+        throw error;
+      });
+  },
   
-  updatePost: (id: string, postData: FormData) => 
-    apiCall<Post>(`/posts/${id}`, { 
-      method: 'PUT', 
+  updatePost: (id: string, postData: FormData) => {
+    const options: RequestInit = {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       body: postData,
-      headers: {}, // Let fetch set proper content-type for FormData
-      requiresAuth: true 
-    }),
+      credentials: 'include'
+    };
+    
+    return fetch(`${API_BASE_URL}/posts/${id}`, options)
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => {
+            throw new Error(err.message || 'Failed to update post');
+          });
+        }
+        return response.json();
+      })
+      .catch(error => {
+        const message = error instanceof Error ? error.message : 'Failed to update post';
+        toast({
+          title: "Error",
+          description: message,
+          variant: "destructive",
+        });
+        throw error;
+      });
+  },
   
   deletePost: (id: string) => 
     apiCall<{ success: boolean }>(`/posts/${id}`, { 
