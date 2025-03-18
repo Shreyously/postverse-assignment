@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +10,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Track scroll position
   useEffect(() => {
@@ -25,6 +25,12 @@ export function Navbar() {
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
+
+  // Create a new handler for logout
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <header
@@ -64,7 +70,7 @@ export function Navbar() {
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-muted-foreground">{user?.username}</span>
-                <Button variant="outline" size="sm" onClick={logout}>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
                   Log out
                 </Button>
               </div>
@@ -120,7 +126,7 @@ export function Navbar() {
               {isAuthenticated ? (
                 <div className="flex flex-col space-y-2">
                   <span className="text-sm text-muted-foreground px-4">{user?.username}</span>
-                  <Button variant="outline" className="w-full" onClick={logout}>
+                  <Button variant="outline" className="w-full" onClick={handleLogout}>
                     Log out
                   </Button>
                 </div>

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -12,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/components/ui/use-toast';
 import { postsApi } from '@/services/api';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Max file size: 5MB
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -40,6 +40,7 @@ type FormValues = z.infer<typeof formSchema>;
 const CreatePost = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
@@ -83,6 +84,9 @@ const CreatePost = () => {
       
       // Send create post request
       const newPost = await postsApi.createPost(formData);
+      
+      // Invalidate and refetch posts query
+      await queryClient.invalidateQueries({ queryKey: ['posts'] });
       
       toast({
         title: 'Success',

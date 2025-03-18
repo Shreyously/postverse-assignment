@@ -1,5 +1,5 @@
-
 import { toast } from "@/components/ui/use-toast";
+import axios from "axios";
 
 // API base URL - change this to your actual backend URL when deployed
 const API_BASE_URL = "http://localhost:5000/api";
@@ -113,8 +113,17 @@ export const authApi = {
 
 // Posts API
 export const postsApi = {
-  getAllPosts: () => 
-    apiCall<Post[]>('/posts', { method: 'GET' }),
+  getAllPosts: async (page = 1, limit = 6, authorId?: string) => {
+    const url = new URL(`${API_BASE_URL}/posts`);
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('limit', limit.toString());
+    if (authorId) {
+      url.searchParams.append('author', authorId);
+    }
+    
+    const response = await axios.get(url.toString());
+    return response.data;
+  },
   
   getPostById: (id: string) => 
     apiCall<Post>(`/posts/${id}`, { method: 'GET' }),

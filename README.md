@@ -1,69 +1,141 @@
-# Welcome to your Lovable project
+# Postverse---Zylentrix Assignment
 
-## Project info
+Postverse is a modern web application that allows users to create, share, and discover posts in a beautiful minimalist platform designed for content creators.
 
-**URL**: https://lovable.dev/projects/7de9fdbd-2b83-4083-804e-5295ed711347
+## Features
 
-## How can I edit this code?
+- 🔐 **User Authentication**
+  - Secure signup and login functionality
+  - JWT-based authentication
+  - Protected routes for authenticated users
 
-There are several ways of editing your application.
+- 📝 **Post Management**
+  - Create, read, update, and delete posts
+  - Rich text content support
+  - Image upload capability
+  - Filter between all posts and personal posts
 
-**Use Lovable**
+- 🎨 **Modern UI/UX**
+  - Responsive design for all devices
+  - Clean and minimalist interface
+  - Smooth transitions and animations
+  - Loading states and error handling
+  - Toast notifications for user feedback
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7de9fdbd-2b83-4083-804e-5295ed711347) and start prompting.
+- 📱 **Advanced Features**
+  - Pagination support
+  - Image optimization and cloud storage
+  - Real-time updates
+  - Mobile-friendly navigation
 
-Changes made via Lovable will be committed automatically to this repo.
+## Tech Stack
 
-**Use your preferred IDE**
+- **Frontend**
+  - React
+  - TypeScript
+  - TanStack Query (React Query)
+  - React Router DOM
+  - Tailwind CSS
+  - Shadcn/ui Components
+  - Axios
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Backend**
+  - Node.js
+  - Express
+  - MongoDB
+  - JWT Authentication
+  - Cloudinary (Image Storage)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Getting Started
 
-Follow these steps:
+### Prerequisites
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- Node.js (v14 or higher)
+- MongoDB
+- npm or yarn
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Installation
 
-# Step 3: Install the necessary dependencies.
-npm i
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/postverse.git
+cd postverse
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+2. Install dependencies for both frontend and backend
+```bash
+# Install frontend dependencies
+cd frontend
+npm install
+
+# Install backend dependencies
+cd ../backend
+npm install
+```
+
+3. Set up environment variables
+```bash
+# Backend (.env)
+PORT=5000
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_key
+CLOUDINARY_API_SECRET=your_cloudinary_secret
+
+# Frontend (.env)
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+4. Start the development servers
+```bash
+# Start backend server
+cd backend
+npm run dev
+
+# Start frontend server (in a new terminal)
+cd frontend
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Usage
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Create an account or log in
+2. Browse posts from all users
+3. Create your own posts with text and optional images
+4. Filter between all posts and your own posts
+5. Edit or delete your posts
+6. View individual posts in detail
 
-**Use GitHub Codespaces**
+## API Endpoints
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Auth**
+  - `POST /api/signup` - Create a new user account
+  - `POST /api/login` - Authenticate user and get token
 
-## What technologies are used for this project?
+- **Posts**
+  - `GET /api/posts` - Get all posts (with pagination)
+  - `GET /api/posts/:id` - Get a specific post
+  - `POST /api/posts` - Create a new post
+  - `PUT /api/posts/:id` - Update a post
+  - `DELETE /api/posts/:id` - Delete a post
 
-This project is built with .
+## Contributing
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/7de9fdbd-2b83-4083-804e-5295ed711347) and click on Share -> Publish.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## I want to use a custom domain - is that possible?
+## Acknowledgments
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Shadcn/ui](https://ui.shadcn.com/)
+- [MongoDB](https://www.mongodb.com/)
+- [Express](https://expressjs.com/)

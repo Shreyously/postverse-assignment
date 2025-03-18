@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -11,28 +10,51 @@ import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Posts = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [viewMode, setViewMode] = useState<'all' | 'my'>('all');
   
-  // Fetch posts
+  // Fetch posts with pagination
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['posts'],
-    queryFn: postsApi.getAllPosts,
+    queryKey: ['posts', currentPage, viewMode],
+    queryFn: async () => {
+      try {
+        const data = await postsApi.getAllPosts(currentPage, 6, viewMode === 'my' ? user?._id : undefined);
+        return data;
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+        throw error;
+      }
+    },
   });
   
   // Update posts state when data changes
   useEffect(() => {
     if (data) {
-      setPosts(data);
+      setPosts(data.posts);
+      setTotalPages(data.totalPages);
+      
+      // If we're on a page higher than total pages, go to last available page
+      if (currentPage > data.totalPages && data.totalPages > 0) {
+        setCurrentPage(data.totalPages);
+      }
     }
-  }, [data]);
+  }, [data, currentPage]);
   
   // Handle post deletion
   const handleDeletePost = async (id: string) => {
     try {
       await postsApi.deletePost(id);
+      
+      // Remove the post from current state
       setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+      
+      // Refetch posts to update pagination
+      await refetch();
+      
       toast({
         title: "Post deleted",
         description: "Your post has been successfully deleted.",
@@ -80,11 +102,83 @@ const Posts = () => {
     </div>
   );
 
+  // Pagination controls
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0);
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex justify-center items-center gap-2 mt-8">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <div className="flex items-center gap-1">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <Button
+              key={page}
+              variant={currentPage === page ? "default" : "outline"}
+              size="sm"
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </Button>
+          ))}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
+    );
+  };
+
+  // Add the filter controls
+  const renderFilterControls = () => {
+    if (!isAuthenticated) return null;
+
+    return (
+      <div className="flex gap-2 mb-6">
+        <Button
+          variant={viewMode === 'all' ? "default" : "outline"}
+          size="sm"
+          onClick={() => setViewMode('all')}
+        >
+          All Posts
+        </Button>
+        <Button
+          variant={viewMode === 'my' ? "default" : "outline"}
+          size="sm"
+          onClick={() => setViewMode('my')}
+        >
+          My Posts
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen pt-20 pb-10">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Posts</h1>
+          <div>
+            <h1 className="text-3xl font-bold mb-4">
+              {viewMode === 'my' ? 'My Posts' : 'All Posts'}
+            </h1>
+            {renderFilterControls()}
+          </div>
           {isAuthenticated && (
             <Button asChild>
               <Link to="/create-post">
@@ -107,15 +201,18 @@ const Posts = () => {
         ) : posts.length === 0 ? (
           renderEmptyState()
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <PostCard 
-                key={post._id} 
-                post={post} 
-                onDelete={handleDeletePost} 
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {posts.map((post) => (
+                <PostCard 
+                  key={post._id} 
+                  post={post} 
+                  onDelete={handleDeletePost} 
+                />
+              ))}
+            </div>
+            {renderPagination()}
+          </>
         )}
       </div>
     </div>

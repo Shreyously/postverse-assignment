@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
@@ -11,11 +10,31 @@ const path = require('path');
 // Get all posts
 router.get('/', async (req, res) => {
   try {
-    const posts = await Post.find()
-      .sort({ createdAt: -1 })
-      .populate('author', 'username email');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const skip = (page - 1) * limit;
+    const authorId = req.query.author;
+
+    // Build query
+    const query = authorId ? { author: authorId } : {};
+
+    const [posts, total] = await Promise.all([
+      Post.find(query)
+        .sort({ createdAt: -1 })
+        .populate('author', 'username email')
+        .skip(skip)
+        .limit(limit),
+      Post.countDocuments(query)
+    ]);
     
-    res.json(posts);
+    const totalPages = Math.ceil(total / limit);
+    
+    res.json({
+      posts,
+      totalPages,
+      currentPage: page,
+      totalPosts: total
+    });
   } catch (error) {
     console.error('Get posts error:', error);
     res.status(500).json({ message: error.message });

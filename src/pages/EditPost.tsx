@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -47,6 +46,8 @@ const EditPost = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [post, setPost] = useState<Post | null>(null);
   
+  const queryClient = useQueryClient();
+
   // Fetch post data
   const { data, isLoading: isLoadingPost, isError } = useQuery({
     queryKey: ['post', id],
@@ -109,6 +110,10 @@ const EditPost = () => {
       
       // Send update post request
       await postsApi.updatePost(id, formData);
+      
+      // Invalidate and refetch queries
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['post', id] });
       
       toast({
         title: 'Success',

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, MoreHorizontal, Trash2, Edit } from 'lucide-react';
@@ -47,67 +46,75 @@ export function PostCard({ post, onDelete }: PostCardProps) {
 
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-md group">
-      <div className="relative aspect-video overflow-hidden bg-muted">
-        {post.imageUrl ? (
-          <img 
-            src={post.imageUrl} 
-            alt={post.title} 
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full bg-secondary">
-            <span className="text-muted-foreground">No image</span>
-          </div>
-        )}
-      </div>
+      <Link to={`/post/${post._id}`} className="block cursor-pointer">
+        <div className="relative aspect-video overflow-hidden bg-muted">
+          {post.imageUrl ? (
+            <img 
+              src={post.imageUrl} 
+              alt={post.title} 
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full bg-secondary">
+              <span className="text-muted-foreground">No image</span>
+            </div>
+          )}
+        </div>
+      </Link>
       
       <CardContent className="p-6">
         <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-xl font-medium line-clamp-2 mb-2">
-              <Link to={`/post/${post._id}`} className="hover:text-primary transition-colors">
+          <div className="flex-1">
+            <Link to={`/post/${post._id}`} className="block">
+              <h3 className="text-xl font-medium line-clamp-2 mb-2 hover:text-primary transition-colors">
                 {post.title}
-              </Link>
-            </h3>
-            <p className="text-muted-foreground line-clamp-3 mb-4">
-              {post.content}
-            </p>
+              </h3>
+              <p className="text-muted-foreground line-clamp-3 mb-4">
+                {post.content}
+              </p>
+            </Link>
           </div>
           
           {isAuthor && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="-mr-2">
-                  <MoreHorizontal size={18} />
-                  <span className="sr-only">Actions</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem asChild>
-                  <Link to={`/edit-post/${post._id}`} className="flex items-center">
-                    <Edit size={16} className="mr-2" />
-                    Edit
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className="text-destructive focus:text-destructive"
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
-                  <Trash2 size={16} className="mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="ml-4" onClick={(e) => e.preventDefault()}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="-mr-2">
+                    <MoreHorizontal size={18} />
+                    <span className="sr-only">Actions</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuItem asChild>
+                    <Link to={`/edit-post/${post._id}`} className="flex items-center">
+                      <Edit size={16} className="mr-2" />
+                      Edit
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="text-destructive focus:text-destructive"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                  >
+                    <Trash2 size={16} className="mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </div>
       </CardContent>
       
       <CardFooter className="px-6 py-4 border-t flex justify-between items-center text-sm text-muted-foreground">
-        <span>By {authorName}</span>
-        <div className="flex items-center">
-          <Clock size={14} className="mr-1" />
-          {formattedDate}
-        </div>
+        <Link to={`/post/${post._id}`} className="block w-full">
+          <div className="flex justify-between items-center">
+            <span>By {authorName}</span>
+            <div className="flex items-center">
+              <Clock size={14} className="mr-1" />
+              {formattedDate}
+            </div>
+          </div>
+        </Link>
       </CardFooter>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
